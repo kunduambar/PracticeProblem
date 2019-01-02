@@ -3,13 +3,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
+
 
 public class TestClass {
 	
@@ -30,7 +26,7 @@ public class TestClass {
         }
         
         long out_ = Solve(k, arr);
-        //System.out.println(out_);
+        System.out.println("Final cost: " + out_);
 
         pr.close();
         br.close();
@@ -40,30 +36,21 @@ public class TestClass {
 	static long Solve(int k, int[] arr){
         // Write code here
 		int maxPosition = returnMaxPosition(arr);
-		System.out.println("Max value array found at: " +  maxPosition);
+		//System.out.println("Max value array found at: " +  maxPosition);
 		//get the possible Array
-		int[] computeArr = Arrays.copyOfRange(arr, (maxPosition - k) < 0 ? 0 : (maxPosition - k), (maxPosition + k) > arr.length ? arr.length : (maxPosition + k + 1));
-		
-		//int[] rightArr = Arrays.copyOfRange(arr, maxPosition + 1, (maxPosition + k) > arr.length ? arr.length : (maxPosition + k + 1));
-		//int[] leftArr = Arrays.copyOfRange(arr, (maxPosition - k) < 0 ? 0 : (maxPosition - k), maxPosition);
-		System.out.println("Compute Arrray:");
-		IntStream.of(computeArr).forEach((i) -> System.out.println(i));
-		if(arr[maxPosition] > 0 ) {
-			int negativeSum = IntStream.of(computeArr).filter((i)-> i < 0).sum();
-			int leftover = negativeSum + arr[maxPosition];
-			if(leftover == arr[maxPosition]) { 
-				// No negative numbers hence cost cannot be reduced
-			}else if(leftover > 0){
-				
-			}else if(leftover < 0) {
-				
-			}
-		}else {
-			int positiveSum = IntStream.of(computeArr).filter((i)-> i > 0).sum();
-		}
-		
-		
-		return returnMaxPosition(arr);
+		int from =  (maxPosition - k) <= 0 ? 0 : (maxPosition - k);
+		int to = (maxPosition + k) >= arr.length ? arr.length : (maxPosition + k + 1);
+		int[] computeArr = Arrays.copyOfRange(arr, from, to);
+		int[] restArrFront = Arrays.copyOfRange(arr, 0, from -1 <= 0 ? 0 : from-1);
+		int[] restArrBack = Arrays.copyOfRange(arr, to , arr.length);
+		//System.out.println("Compute Arrray:");
+		//IntStream.of(computeArr).forEach((i) -> System.out.println(i));
+		//Long cost = IntStream.of(computeArr).mapToLong(i -> i).sum();
+		long cost = IntStream.of(computeArr).mapToLong(i -> i).sum();
+		long cost1 = IntStream.of(restArrFront).map(number -> Math.abs(number)).mapToLong(i -> i).sum();
+		long cost2 = IntStream.of(restArrBack).map(number -> Math.abs(number)).mapToLong(i -> i).sum();
+
+		return cost + cost1 + cost2;
     }
 	
 	static int returnMaxPosition(int[] arr) {
